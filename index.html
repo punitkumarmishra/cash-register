@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="cash counter">
+    <title>Cash counter</title>
+</head>
+<body>
+  <script>
+   
+     var denom = [
+	{ name: 'two thousand', val: 2000},
+	{ name: 'five hundred', val: 500},
+	{ name: 'hundred', val: 100},
+	{ name: 'FIfty', val: 50},
+	{ name: 'twenty', val: 20},
+	{ name: 'ten', val: 10},
+	{ name: 'five', val: 5},
+	{ name: 'two', val: 2},
+	{ name: 'one', val: 1}
+];
+function checkCashRegister(price, cash, cid) {
+  var output = {status: null, change: []};
+  var change = cash - price;
+  var register = cid.reduce(function(acc, curr) {
+  acc.total += curr[1];
+  acc[curr[0]] = curr[1];
+  return acc;
+  }, {total: 0});
+  if(register.total === change) {
+  output.status = 'CLOSED';
+  output.change = cid;
+  return output;
+  }
+  if(register.total < change) {
+  output.status = 'INSUFFICIENT_FUNDS';
+  return output;
+  }
+  var change_arr = denom.reduce(function(acc, curr) {
+  var value = 0;
+  while(register[curr.name] > 0 && change >= curr.val) {
+  change -= curr.val;
+  register[curr.name] -= curr.val;
+  value += curr.val;
+  change = Math.round(change * 100) / 100;
+  }
+  if(value > 0) {
+  acc.push([ curr.name, value ]);
+  }
+  return acc;
+  }, []);
+  if(change_arr.length < 1 || change > 0) {
+  output.status = 'INSUFFICIENT_FUNDS';
+  return output;
+  }
+  output.status = 'OPEN';
+  output.change = change_arr;
+  return output;
+ }
+</script>
+
+
+
+</body>
+
+</html>
